@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksperimen WASM vs JS</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .info { padding: 10px; background-color: #f0f0f0; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h2>Eksperimen Performa: WebAssembly vs JavaScript murni</h2>
+    <p class="info">Silakan klik kanan -> <strong>Inspect</strong> -> buka tab <strong>Console</strong> untuk melihat hasil perhitungan dan perbandingan waktu!</p>
+
+    <script>
+  
+        function fibJS(n) {
+            if (n <= 1) return n;
+            return fibJS(n - 1) + fibJS(n - 2);
+        }
+        fetch('test.wasm')
+            .then(response => response.arrayBuffer())
+            .then(bytes => WebAssembly.instantiate(bytes))
+            .then(results => {
+                const fibWasm = results.instance.exports.fib;
+
+                console.log("Mulai menghitung Fibonacci ke-40. Tunggu sebentar (laptop mungkin akan agak nge-lag)...");
+
+                console.time("Waktu WASM");
+                console.log("Hasil dari WASM: ", fibWasm(40));
+                console.timeEnd("Waktu WASM");
+
+                console.time("Waktu JavaScript");
+                console.log("Hasil dari JS: ", fibJS(40));
+                console.timeEnd("Waktu JavaScript");
+            })
+            .catch(console.error);
+    </script>
+</body>
+</html>
